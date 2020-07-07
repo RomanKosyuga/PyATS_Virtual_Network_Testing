@@ -1,0 +1,185 @@
+testbed:
+  name: pyATS_Testbed
+  alias: Sample_pyATS_Testbed
+  credentials:
+    default:
+      username: admin
+      password: CSCO12345^
+
+  servers:
+    filesrv:
+      server: tftp
+      address: 192.168.122.57
+      credentials:
+        defaults:
+          username: ubuntu
+          password: ubuntu
+          password_type: plaintext
+
+devices:
+  SOHO:
+    os: 'ios'
+    type: c7200
+    platform: platform
+    connections:
+      defaults:
+        class: 'unicon.Unicon'
+      console:
+        protocol: telnet
+        ip: '%ENV{ROUTERIP}'
+        port: 5001
+        arguments:
+          log_stdout: False
+
+  ISP1:
+    os: 'ios'
+    type: c7200
+    platform: platform
+    connections:
+      defaults:
+        class: 'unicon.Unicon'
+      console:
+        protocol: telnet
+        ip: '%ENV{ROUTERIP}'
+        port: 5002
+        arguments:
+          log_stdout: False
+
+  ISP2:
+    os: 'ios'
+    type: c7200
+    platform: platform
+    connections:
+      defaults:
+        class: 'unicon.Unicon'
+      console:
+        protocol: telnet
+        ip: '%ENV{ROUTERIP}'
+        port: 5003
+        arguments:
+          log_stdout: False
+
+  PC1:
+    os: 'linux'
+    type: VPCS
+    platform: platform
+    connections:
+      defaults:
+        class: 'unicon.Unicon'
+      console:
+        protocol: telnet
+        ip: '%ENV{ROUTERIP}'
+        port: 5004
+  PC2:
+    os: 'linux'
+    type: VPCS
+    platform: platform
+    connections:
+      defaults:
+        class: 'unicon.Unicon'
+      console:
+        protocol: telnet
+        ip: '%ENV{ROUTERIP}'
+        port: 5006
+  PC3:
+    os: 'linux'
+    type: VPCS
+    platform: platform
+    connections:
+      defaults:
+        class: 'unicon.Unicon'
+      console:
+        protocol: telnet
+        ip: '%ENV{ROUTERIP}'
+        port: 5008
+
+topology:
+  SOHO:
+    interfaces:
+      GigabitEthernet2/0:
+        ipv4: 192.168.1.1/24
+        link: pc-soho
+        type: ethernet
+      Serial1/0:
+        ipv4: 200.1.1.1/30
+        link: soho-isp1
+        type: ethernet
+      Serial1/1:
+        ipv4: 202.1.1.1/30
+        link: soho-isp2
+        type: ethernet
+      Loopback0:
+        ipv4: 192.168.100.1/32
+        link: SOHO_Loopback0
+        type: loopback
+      FastEthernet0/0:
+        ipv4: 192.168.122.10/24
+        link: isp2-cloud-soho-isp1
+        type: ethernet
+
+  ISP1:
+    interfaces:
+      GigabitEthernet2/0:
+        ipv4: 192.168.2.1/24
+        link: pc-isp1
+        type: ethernet
+      Serial1/0:
+        ipv4: 200.1.1.2/30
+        link: soho-isp1
+        type: ethernet
+      Serial1/2:
+        ipv4: 201.1.1.1/30
+        link: isp1-isp2
+        type: ethernet
+      Loopback0:
+        ipv4: 192.168.100.2/32
+        link: SOHO_Loopback0
+        type: loopback
+      FastEthernet0/0:
+        ipv4: 192.168.122.11/24
+        link: isp2-cloud-soho-isp1
+        type: ethernet
+
+  ISP2:
+    interfaces:
+      GigabitEthernet2/0:
+        ipv4: 192.168.3.1/24
+        link: pc-isp2
+        type: ethernet
+      Serial1/0:
+        ipv4: 201.1.1.2/30
+        link: isp1-isp2
+        type: ethernet
+      Serial1/2:
+        ipv4: 202.1.1.2/30
+        link: soho-isp2
+        type: ethernet
+      Loopback0:
+        ipv4: 192.168.100.3/32
+        link: SOHO_Loopback0
+        type: loopback
+      FastEthernet0/0:
+        ipv4: 192.168.122.12/24
+        link: isp2-cloud-soho-isp1
+        type: ethernet
+
+  PC1:
+    interfaces:
+      Ethernet0/0:
+        ipv4: 192.168.1.2/24
+        link: pc-soho
+        type: ethernet
+
+  PC2:
+    interfaces:
+      Ethernet0/0:
+        ipv4: 192.168.2.2/24
+        link: pc-isp1
+        type: ethernet
+
+  PC3:
+    interfaces:
+      Ethernet0/0:
+        ipv4: 192.168.3.2/24
+        link: pc-isp2
+        type: ethernet
