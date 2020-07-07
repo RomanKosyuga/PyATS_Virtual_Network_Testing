@@ -72,84 +72,84 @@ class PingTestCase(aetest.Testcase):
                 ))
 
 
-# @aetest.loop(uids=['test_tftp_soho', 'test_tftp_isp1', 'test_tftp_isp2'],
-#              router=['router_soho', 'router_isp1', 'router_isp2'])
-# class TestCaseTftp(aetest.Testcase):
-#     """T2. make backup to the TFTP server and restore it.
-#     - add verification that config restored correctly (try use loop
-#     for customizing config, for example, change banner message).
-#     """
-#
-#     @aetest.test
-#     def test_tftp_backup(self, router):
-#         """Change Banner and upload backup to tftp server"""
-#         try:
-#             # set banner
-#             self.parent.my_banner = banner.get_banner()
-#             self.parent.parameters[router].configure(
-#                 f'banner motd "{self.parent.my_banner}"')
-#             # backup
-#             srv_adr = self.parent.parameters['testbed'].servers.filesrv.address
-#             self.parent.parameters[router].configure("file prompt quiet")
-#             self.parent.parameters[router].execute(
-#                 f"copy running-config tftp://{srv_adr}/{router}")
-#         except SubCommandFailure:
-#             self.failed('smth bad happened with tftp server :c')
-#
-#     @aetest.test
-#     def test_tftp_restore(self, router):
-#         """Restore config from tftp server and verify that banner msg is present
-#         """
-#         try:
-#             # restore
-#             srv_adr = self.parent.parameters['testbed'].servers.filesrv.address
-#             self.parent.parameters[router].execute(
-#                 f"copy tftp://{srv_adr}/{router} startup-config")
-#             self.parent.parameters[router].configure("file prompt alert")
-#             # verify my_banner is in startup config
-#             config = self.parent.parameters[router].execute(
-#                 "show startup-config")
-#             banner_regex = re.compile(r"""banner\smotd\s\^C(.*)\^C""")
-#             results = banner_regex.search(config)
-#             msg = (
-#                 f"startup-banner is: {results},"
-#                 f"expected-banner is: {self.parent.my_banner}")
-#             assert self.parent.my_banner == results.group(1), msg
-#
-#         except SubCommandFailure:
-#             self.failed('backup download from tftp server failed')
-#         except AttributeError:
-#             self.failed('Regex failed to find any results of "banner motd"')
-#
-#
-# @aetest.loop(uids=['testValidIntSoho', 'testValidIntIsp1', 'testValidIntIsp2'],
-#              router=['router_soho', 'router_isp1', 'router_isp2'])
-# class TestCaseValidateInterface(aetest.Testcase):
-#     """T3. Validate interface ip/mask/gateway
-#     Compare show run interface ip/subnet/gateway and the same information
-#     extracted from sh ip int brief
-#     """
-#
-#     @aetest.setup
-#     def setup(self, router):
-#         """gather info about sh ip in br"""
-#         result_showip = self.parent.parameters[router].execute("sh ip in br")
-#         interface_regex = re.compile(r"""(\w*\d+/\d+)\s*         # interface
-#                                          (\d+\.?\d+\.?\d+\.?\d+) # ip address
-#                                          .*\n                    # else
-#                                          """, re.VERBOSE)
-#         interface_ip = interface_regex.findall(result_showip)
-#         aetest.loop.mark(self.test_compare_show_run, interface_ip=interface_ip)
-#
-#     @aetest.test
-#     def test_compare_show_run(self, router, interface_ip):
-#         """ Compare results of "ip interface brief" with "show run interface"
-#         """
-#         show_run = self.parent.parameters[router].execute(
-#             f"show run interface {interface_ip[0]}")
-#         ip_regex = re.compile(r"ip\saddress\s(\d+\.?\d+\.?\d+\.?\d+)")
-#         result = ip_regex.search(show_run)
-#         assert interface_ip[1] == result.group(1)
+ @aetest.loop(uids=['test_tftp_soho', 'test_tftp_isp1', 'test_tftp_isp2'],
+              router=['router_soho', 'router_isp1', 'router_isp2'])
+ class TestCaseTftp(aetest.Testcase):
+     """T2. make backup to the TFTP server and restore it.
+     - add verification that config restored correctly (try use loop
+     for customizing config, for example, change banner message).
+     """
+
+     @aetest.test
+     def test_tftp_backup(self, router):
+         """Change Banner and upload backup to tftp server"""
+         try:
+             # set banner
+             self.parent.my_banner = banner.get_banner()
+             self.parent.parameters[router].configure(
+                 f'banner motd "{self.parent.my_banner}"')
+             # backup
+             srv_adr = self.parent.parameters['testbed'].servers.filesrv.address
+             self.parent.parameters[router].configure("file prompt quiet")
+             self.parent.parameters[router].execute(
+                 f"copy running-config tftp://{srv_adr}/{router}")
+         except SubCommandFailure:
+             self.failed('smth bad happened with tftp server :c')
+
+     @aetest.test
+     def test_tftp_restore(self, router):
+         """Restore config from tftp server and verify that banner msg is present
+         """
+         try:
+             # restore
+             srv_adr = self.parent.parameters['testbed'].servers.filesrv.address
+             self.parent.parameters[router].execute(
+                 f"copy tftp://{srv_adr}/{router} startup-config")
+             self.parent.parameters[router].configure("file prompt alert")
+             # verify my_banner is in startup config
+             config = self.parent.parameters[router].execute(
+                 "show startup-config")
+             banner_regex = re.compile(r"""banner\smotd\s\^C(.*)\^C""")
+             results = banner_regex.search(config)
+             msg = (
+                 f"startup-banner is: {results},"
+                 f"expected-banner is: {self.parent.my_banner}")
+             assert self.parent.my_banner == results.group(1), msg
+
+         except SubCommandFailure:
+             self.failed('backup download from tftp server failed')
+         except AttributeError:
+             self.failed('Regex failed to find any results of "banner motd"')
+
+
+ @aetest.loop(uids=['testValidIntSoho', 'testValidIntIsp1', 'testValidIntIsp2'],
+              router=['router_soho', 'router_isp1', 'router_isp2'])
+ class TestCaseValidateInterface(aetest.Testcase):
+     """T3. Validate interface ip/mask/gateway
+     Compare show run interface ip/subnet/gateway and the same information
+     extracted from sh ip int brief
+     """
+
+     @aetest.setup
+     def setup(self, router):
+         """gather info about sh ip in br"""
+         result_showip = self.parent.parameters[router].execute("sh ip in br")
+         interface_regex = re.compile(r"""(\w*\d+/\d+)\s*         # interface
+                                          (\d+\.?\d+\.?\d+\.?\d+) # ip address
+                                          .*\n                    # else
+                                          """, re.VERBOSE)
+         interface_ip = interface_regex.findall(result_showip)
+         aetest.loop.mark(self.test_compare_show_run, interface_ip=interface_ip)
+
+     @aetest.test
+     def test_compare_show_run(self, router, interface_ip):
+         """ Compare results of "ip interface brief" with "show run interface"
+         """
+         show_run = self.parent.parameters[router].execute(
+             f"show run interface {interface_ip[0]}")
+         ip_regex = re.compile(r"ip\saddress\s(\d+\.?\d+\.?\d+\.?\d+)")
+         result = ip_regex.search(show_run)
+         assert interface_ip[1] == result.group(1)
 
 
 class CommonCleanup(aetest.CommonCleanup):
